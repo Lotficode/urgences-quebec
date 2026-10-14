@@ -1,0 +1,27 @@
+name: Réentraînement hebdomadaire
+
+on:
+  schedule:
+    - cron: "0 7 * * 1"       # chaque lundi
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  entrainement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - run: python -m urgences.entrainement
+      - name: Publier les modèles et leurs métriques
+        run: |
+          git config user.name "entrainement-automatique"
+          git config user.email "actions@users.noreply.github.com"
+          git add modeles/ || true
+          git diff --cached --quiet || git commit -m "Modèles réentraînés le $(date -u +'%Y-%m-%d')"
+          git push

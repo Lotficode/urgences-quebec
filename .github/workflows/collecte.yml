@@ -1,0 +1,29 @@
+name: Collecte horaire
+
+# Le fichier du MSSS ne garde que la dernière heure : on le récupère chaque heure
+# et on ajoute les relevés à donnees/urgences.db, qui est versionnée dans le dépôt.
+on:
+  schedule:
+    - cron: "55 * * * *"      # publié environ 45 min après l'extraction
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  collecte:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pandas requests
+      - run: python -m urgences.collecte
+      - name: Enregistrer les nouveaux relevés
+        run: |
+          git config user.name "collecte-automatique"
+          git config user.email "actions@users.noreply.github.com"
+          git add donnees/urgences.db
+          git diff --cached --quiet || git commit -m "Relevé $(date -u +'%Y-%m-%d %H:00') UTC"
+          git push

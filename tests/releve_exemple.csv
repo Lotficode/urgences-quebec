@@ -1,0 +1,5 @@
+RSS;Region;Nom_etablissement;Nom_installation;No_permis_installation;Nombre_de_civieres_fonctionnelles;Nombre_de_civieres_occupees;Nombre_de_patients_sur_civieres_plus_de_24_heures;Nombre_de_patients_sur_civieres_plus_de_48_heures;Nombre_total_de_patients_presents_a_lurgence;Nombre_total_de_patients_en_attente_de_PEC;DMS_sur_civiere;DMS_ambulatoire;DMS_sur_civiere_horaire;DMS_ambulatoire_horaire;Heure_de_l’extraction_(image);Mise_a_jour
+06;Montréal;CIUSSS Démo;Hôpital Démo A;11111111;40;52;12;3;95;30;22,5;4,75;22:30;04:45;2026-10-13 14:00;2026-10-13 14:45
+06;Montréal;CIUSSS Démo;Hôpital Démo B;22222222;20;15;2;0;40;12;18,0;3,5;18:00;03:30;2026-10-13 14:00;2026-10-13 14:45
+06;Montréal;Total régional;Total régional;;60;67;14;3;135;42;;;;;2026-10-13 14:00;2026-10-13 14:45
+99;Ensemble du Québec;Ensemble du Québec;Ensemble du Québec;;60;67;14;3;135;42;;;;;2026-10-13 14:00;2026-10-13 14:45
