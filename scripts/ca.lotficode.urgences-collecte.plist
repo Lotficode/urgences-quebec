@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!-- Lance la collecte chaque heure à xx h 55 (le MSSS publie ~45 min après l'extraction).
-     Installation : voir la section « Collecte automatique sur le Mac » du README. -->
+<!-- Lance scripts/tache_horaire.sh chaque heure à xx h 55 (le MSSS publie ~45 min après l'extraction). -->
 <plist version="1.0">
 <dict>
     <key>Label</key>
@@ -9,7 +8,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/Users/lotfi/Documents/urgences-quebec/scripts/collecte_locale.sh</string>
+        <string>/Users/lotfi/urgences-quebec/scripts/tache_horaire.sh</string>
     </array>
     <key>StartCalendarInterval</key>
     <dict>

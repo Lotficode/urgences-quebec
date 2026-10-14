@@ -10,7 +10,7 @@ moins achalandée d'une région.
 ## Fonctionnement
 
 ```
- MSSS (CSV horaire)          GitHub Actions               SQLite
+ MSSS (CSV horaire)        tâche planifiée macOS              SQLite
 ┌──────────────────┐ chaque ┌──────────────────┐ ajoute ┌──────────────────┐
 │ situation de la  │ heure  │ collecte.py      │──────► │ historique des   │
 │ dernière heure   │──────► │ nettoie, valide  │        │ relevés horaires │
@@ -39,8 +39,9 @@ moins achalandée d'une région.
 ## Choix techniques
 
 - **Pourquoi accumuler l'historique soi-même ?** Le fichier du MSSS ne contient que la
-  dernière heure. L'historique n'existe que si on le collecte; c'est le rôle de la collecte horaire,
-  qui l'enregistre dans le dépôt toutes les heures (*git scraping*).
+  dernière heure. L'historique n'existe que si on le collecte; c'est le rôle de la tâche horaire
+  (`scripts/tache_horaire.sh`). Le site du MSSS refuse les serveurs infonuagiques
+  (erreur 403), d'où une exécution sur un poste personnel.
 - **Validation temporelle.** Le modèle est entraîné sur le passé et testé sur les 20 %
   les plus récents. Les exemples dont la cible tombe dans la période de test sont retirés
   de l'entraînement : aucune information du futur ne fuit dans le modèle
@@ -48,26 +49,25 @@ moins achalandée d'une région.
 - **Deux baselines.** Chaque entraînement compare le modèle à la *persistance*
   (« ce sera comme maintenant ») et à la *baseline saisonnière* (« comme hier à la
   même heure »). Les erreurs sont écrites dans `modeles/metriques.json`.
-- **Réentraînement automatique** chaque lundi (`entrainement.yml`) pour suivre
+- **Réentraînement automatique** chaque lundi à 6 h (même tâche planifiée) pour suivre
   l'évolution de la saison (grippe, vacances, fermetures).
 - **Données manquantes** : une heure sans relevé reste vide dans une grille horaire
   régulière au lieu de décaler toute la série; le gradient boosting gère les valeurs vides.
 
-## Collecte automatique sur le Mac
+## Automatisation (macOS)
 
-Le site du MSSS refuse les requêtes venant des serveurs de GitHub (erreur 403) : la
-collecte horaire tourne donc sur un Mac personnel, puis pousse les relevés sur GitHub,
-où le réentraînement hebdomadaire continue de s'exécuter.
+Une seule tâche planifiée (launchd) lance `scripts/tache_horaire.sh` chaque heure à
+xx h 55 : elle ajoute le relevé, et le lundi à 6 h elle réentraîne les modèles.
+Le projet doit être hors de Documents, Bureau et Téléchargements (par exemple
+`~/urgences-quebec`), car macOS interdit ces dossiers aux tâches planifiées.
 
 ```bash
-python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 cp scripts/ca.lotficode.urgences-collecte.plist ~/Library/LaunchAgents/
 launchctl load ~/Library/LaunchAgents/ca.lotficode.urgences-collecte.plist
-tail -f /tmp/urgences-collecte.log      # suivre les collectes
+tail -f /tmp/urgences-collecte.log      # suivre les exécutions
 ```
 
-Le Mac doit être allumé (pas forcément ouvert) pour qu'une heure soit collectée; une
-heure manquée reste simplement vide dans la série, ce que le modèle gère.
+Une heure où le Mac est éteint reste simplement vide dans la série; le modèle le gère.
 
 ## Installation
 
