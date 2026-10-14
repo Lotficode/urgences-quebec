@@ -39,8 +39,8 @@ moins achalandée d'une région.
 ## Choix techniques
 
 - **Pourquoi accumuler l'historique soi-même ?** Le fichier du MSSS ne contient que la
-  dernière heure. L'historique n'existe que si on le collecte; c'est le rôle du workflow
-  `collecte.yml`, qui l'enregistre dans le dépôt toutes les heures (*git scraping*).
+  dernière heure. L'historique n'existe que si on le collecte; c'est le rôle de la collecte horaire,
+  qui l'enregistre dans le dépôt toutes les heures (*git scraping*).
 - **Validation temporelle.** Le modèle est entraîné sur le passé et testé sur les 20 %
   les plus récents. Les exemples dont la cible tombe dans la période de test sont retirés
   de l'entraînement : aucune information du futur ne fuit dans le modèle
@@ -52,6 +52,22 @@ moins achalandée d'une région.
   l'évolution de la saison (grippe, vacances, fermetures).
 - **Données manquantes** : une heure sans relevé reste vide dans une grille horaire
   régulière au lieu de décaler toute la série; le gradient boosting gère les valeurs vides.
+
+## Collecte automatique sur le Mac
+
+Le site du MSSS refuse les requêtes venant des serveurs de GitHub (erreur 403) : la
+collecte horaire tourne donc sur un Mac personnel, puis pousse les relevés sur GitHub,
+où le réentraînement hebdomadaire continue de s'exécuter.
+
+```bash
+python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
+cp scripts/ca.lotficode.urgences-collecte.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/ca.lotficode.urgences-collecte.plist
+tail -f /tmp/urgences-collecte.log      # suivre les collectes
+```
+
+Le Mac doit être allumé (pas forcément ouvert) pour qu'une heure soit collectée; une
+heure manquée reste simplement vide dans la série, ce que le modèle gère.
 
 ## Installation
 
