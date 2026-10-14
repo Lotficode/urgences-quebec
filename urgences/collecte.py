@@ -101,8 +101,21 @@ def nettoyer(brut: pd.DataFrame) -> pd.DataFrame:
     return releves[base.COLONNES].reset_index(drop=True)
 
 
+ENTETES_NAVIGATEUR = {
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/128.0 Safari/537.36"
+    ),
+    "Accept": "text/csv,text/plain,*/*",
+    "Accept-Language": "fr-CA,fr;q=0.9,en;q=0.8",
+}
+
+
 def telecharger(url: str = config.URL_RELEVE) -> bytes:
-    reponse = requests.get(url, timeout=60, headers={"User-Agent": "urgences-quebec/1.0"})
+    # Le site du MSSS refuse (403) les programmes qui ne s'annoncent pas comme un
+    # navigateur, et redirige (301) vers l'adresse actuelle du fichier : requests
+    # suit les redirections automatiquement.
+    reponse = requests.get(url, timeout=60, headers=ENTETES_NAVIGATEUR, allow_redirects=True)
     reponse.raise_for_status()
     return reponse.content
 
